@@ -83,8 +83,12 @@ class MiniemHub:
 
     @callback
     def ha_device_id(self, device_id: str) -> str | None:
-        entry = dr.async_get(self.hass).async_get_device(identifiers={(DOMAIN, device_id)})
-        return entry.id if entry else None
+        # Looked up among this entry's own devices: identifiers are only unique per
+        # config entry now, and async_get_device is deprecated for that reason.
+        for entry in dr.async_entries_for_config_entry(dr.async_get(self.hass), self.entry_id):
+            if (DOMAIN, device_id) in entry.identifiers:
+                return entry.id
+        return None
 
     # ---- cards --------------------------------------------------------------------
 
