@@ -5,7 +5,7 @@ blueprint:
     Home Assistant panel asking whether you meant it. Press Undo and the entities you
     picked go back to how they were just before. Leave the card alone and it expires.
   domain: automation
-  source_url: https://github.com/Mechanomythia/custom_components/blob/main/blueprints/automation/miniem/undo_card.yaml
+  source_url: https://github.com/Mechanomythia/miniem-ha/blob/main/blueprints/automation/miniem/undo_card.yaml
   input:
     when:
       name: Trigger

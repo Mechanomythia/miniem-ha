@@ -1,13 +1,18 @@
 {
   "domain": "miniem",
   "name": "Miniem",
-  "codeowners": [],
+  "codeowners": [
+    "@Mechanomythia"
+  ],
   "config_flow": true,
-  "dependencies": ["http"],
-  "documentation": "https://github.com/klmz/miniem-android/blob/main/docs/home-assistant.md",
+  "dependencies": [
+    "http"
+  ],
+  "documentation": "https://github.com/Mechanomythia/miniem-ha",
   "integration_type": "service",
   "iot_class": "cloud_push",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "issue_tracker": "https://github.com/Mechanomythia/miniem-ha/issues"
 }
