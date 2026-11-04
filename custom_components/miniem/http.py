@@ -11,6 +11,7 @@ from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError, ServiceNotFound
+from homeassistant.helpers.http import KEY_HASS
 
 from .const import DOMAIN, EVENT_ACTION
 
@@ -18,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _hub(request: web.Request):
-    hass = request.app["hass"]
+    hass = request.app[KEY_HASS]
     return hass, hass.data.get(DOMAIN)
 
 

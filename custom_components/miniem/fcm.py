@@ -14,12 +14,13 @@ import time
 from typing import Any
 
 import jwt
-from aiohttp import ClientError, ClientSession
+from aiohttp import ClientError, ClientSession, ClientTimeout
 
 _LOGGER = logging.getLogger(__name__)
 
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
+TIMEOUT = ClientTimeout(total=15)
 SEND_URL = "https://fcm.googleapis.com/v1/projects/{project}/messages:send"
 
 
@@ -83,7 +84,7 @@ class FcmClient:
                     "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
                     "assertion": assertion,
                 },
-                timeout=15,
+                timeout=TIMEOUT,
             ) as response:
                 body = await response.json(content_type=None)
                 if response.status != 200 or "access_token" not in body:
@@ -107,7 +108,7 @@ class FcmClient:
                 SEND_URL.format(project=self.project_id),
                 json=message,
                 headers={"Authorization": f"Bearer {access}"},
-                timeout=15,
+                timeout=TIMEOUT,
             ) as response:
                 if response.status == 200:
                     return
