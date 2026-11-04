@@ -50,16 +50,19 @@ class MiniemHub:
             identifiers={(DOMAIN, device_id)},
             name=device.get("name") or "Miniem phone",
             manufacturer="Miniem",
-            model="Launcher",
+            model="iOS app" if device.get("platform") == "ios" else "Launcher",
             sw_version=device.get("app_version"),
         )
 
     # ---- phones -------------------------------------------------------------------
 
     @callback
-    def register(self, device_id: str, name: str, push_token: str | None, app_version: str | None) -> None:
+    def register(
+        self, device_id: str, name: str, push_token: str | None, app_version: str | None, platform: str = "android"
+    ) -> None:
         self.devices[device_id] = {
             "name": name,
+            "platform": platform,
             "push_token": push_token,
             "app_version": app_version,
             "registered_at": _now_ms(),
@@ -135,7 +138,7 @@ class MiniemHub:
         if body:
             data["body"] = body
         try:
-            await self.fcm.send(device["push_token"], data)
+            await self.fcm.send(device["push_token"], data, device.get("platform", "android"))
         except TokenUnregistered:
             _LOGGER.info("Push token for %s is gone; it re-registers when the launcher next opens", device.get("name"))
             device["push_token"] = None

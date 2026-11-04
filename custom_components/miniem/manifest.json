@@ -13,6 +13,6 @@
   "iot_class": "cloud_push",
   "requirements": [],
   "single_config_entry": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "issue_tracker": "https://github.com/Mechanomythia/miniem-ha/issues"
 }

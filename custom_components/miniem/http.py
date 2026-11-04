@@ -47,6 +47,7 @@ class RegisterView(HomeAssistantView):
             name=str(body.get("name") or "Miniem phone")[:100],
             push_token=body.get("push_token") or None,
             app_version=body.get("app_version"),
+            platform="ios" if body.get("platform") == "ios" else "android",
         )
         return self.json({"ok": True})
 

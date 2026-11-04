@@ -93,16 +93,40 @@ class FcmClient:
             self._expires = now + int(body.get("expires_in", 3600))
             return self._token
 
-    async def send(self, push_token: str, data: dict[str, str]) -> None:
-        """Send one high-priority data message. Raises TokenUnregistered for dead tokens."""
+    async def send(self, push_token: str, data: dict[str, str], platform: str = "android") -> None:
+        """Send one message. Raises TokenUnregistered for dead tokens.
+
+        Android gets a high-priority data message and decides itself what to show. iOS
+        cannot be woken that freely: a quiet card is a background push (content-available,
+        which iOS rations), and a focus card is a visible time-sensitive alert, because an
+        iOS app can never bring itself to the front.
+        """
         access = await self.access_token()
-        message = {
-            "message": {
-                "token": push_token,
-                "data": {key: str(value) for key, value in data.items()},
-                "android": {"priority": "high", "ttl": "600s"},
-            }
+        message: dict = {
+            "token": push_token,
+            "data": {key: str(value) for key, value in data.items()},
         }
+        if platform == "ios":
+            if data.get("focus") == "true":
+                message["apns"] = {
+                    "headers": {"apns-push-type": "alert", "apns-priority": "10"},
+                    "payload": {
+                        "aps": {
+                            "alert": {"title": data.get("title", "Home Assistant"), "body": data.get("body", "")},
+                            "sound": "default",
+                            "interruption-level": "time-sensitive",
+                            "content-available": 1,
+                        }
+                    },
+                }
+            else:
+                message["apns"] = {
+                    "headers": {"apns-push-type": "background", "apns-priority": "5"},
+                    "payload": {"aps": {"content-available": 1}},
+                }
+        else:
+            message["android"] = {"priority": "high", "ttl": "600s"}
+        message = {"message": message}
         try:
             async with self._session.post(
                 SEND_URL.format(project=self.project_id),
