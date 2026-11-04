@@ -1,0 +1,109 @@
+blueprint:
+  name: Miniem — do it, then offer an undo
+  description: >
+    Runs your actions when the trigger fires, then puts a card on the Miniem launcher's
+    Home Assistant panel asking whether you meant it. Press Undo and the entities you
+    picked go back to how they were just before. Leave the card alone and it expires.
+  domain: automation
+  source_url: https://github.com/Mechanomythia/custom_components/blob/main/blueprints/automation/miniem/undo_card.yaml
+  input:
+    when:
+      name: Trigger
+      selector:
+        trigger:
+    actions:
+      name: Actions
+      description: What the automation does.
+      selector:
+        action:
+    undo_entities:
+      name: Entities to restore on undo
+      description: Their state is snapshotted right before the actions run.
+      selector:
+        entity:
+          multiple: true
+    title:
+      name: Card title
+      default: "Automation ran"
+      selector:
+        text:
+    message:
+      name: Card text
+      default: "Did you want that?"
+      selector:
+        text:
+          multiline: true
+    phones:
+      name: Phones
+      description: Leave empty for every phone.
+      default: []
+      selector:
+        device:
+          integration: miniem
+          multiple: true
+    focus:
+      name: Bring up the panel
+      description: Off shows only a dot under the clock until you swipe up.
+      default: false
+      selector:
+        boolean:
+    timeout:
+      name: Undo window
+      default:
+        minutes: 10
+      selector:
+        duration:
+
+mode: restart
+
+triggers: !input when
+
+variables:
+  card_id: "undo_{{ this.attributes.id | default(this.entity_id | replace('.', '_')) }}"
+  window: !input timeout
+  ttl_seconds: >
+    {{ (window.hours | default(0) | int) * 3600 + (window.minutes | default(0) | int) * 60
+       + (window.seconds | default(0) | int) }}
+
+actions:
+  - action: scene.create
+    data:
+      scene_id: "{{ card_id }}"
+      snapshot_entities: !input undo_entities
+  - sequence: !input actions
+  - action: miniem.show_card
+    data:
+      device_id: !input phones
+      focus: !input focus
+      ttl: "{{ [ttl_seconds | int, 1] | max }}"
+      card:
+        id: "{{ card_id }}"
+        title: !input title
+        subtitle: "{{ now().strftime('%H:%M') }}"
+        body:
+          - type: text
+            text: !input message
+          - type: row
+            children:
+              - type: button
+                label: Undo
+                style: danger
+                action: undo
+              - type: button
+                label: Keep
+                action:
+                  type: dismiss
+  - wait_for_trigger:
+      - trigger: event
+        event_type: miniem_action
+        event_data:
+          card_id: "{{ card_id }}"
+    timeout: !input timeout
+    continue_on_timeout: true
+  - if:
+      - condition: template
+        value_template: "{{ wait.trigger is not none and wait.trigger.event.data.action == 'undo' }}"
+    then:
+      - action: scene.turn_on
+        target:
+          entity_id: "scene.{{ card_id }}"

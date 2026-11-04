@@ -1,0 +1,73 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Miniem",
+        "description": "Paste the JSON key of a Firebase service account allowed to send Cloud Messaging (Firebase console \u2192 Project settings \u2192 Service accounts \u2192 Generate new private key). The launcher connects itself afterwards, with a long-lived access token.",
+        "data": {
+          "service_account": "Service account JSON"
+        }
+      }
+    },
+    "error": {
+      "not_json": "That is not JSON.",
+      "missing_fields": "The JSON is missing project_id, client_email, private_key or token_uri.",
+      "not_service_account": "That is not a service account key.",
+      "token_refused": "Google refused the key. Is it current, and does the account have the Firebase Cloud Messaging API Admin role?",
+      "cannot_connect": "Could not reach Google."
+    },
+    "abort": {
+      "single_instance_allowed": "Miniem is already set up."
+    }
+  },
+  "services": {
+    "show_card": {
+      "name": "Show card",
+      "description": "Put a card on the Miniem launcher's Home Assistant panel. A card with the same id replaces the old one.",
+      "fields": {
+        "device_id": {
+          "name": "Phones",
+          "description": "Leave empty for every phone."
+        },
+        "card": {
+          "name": "Card",
+          "description": "The card: id, title, subtitle, body. See docs/home-assistant.md in the Miniem repository."
+        },
+        "focus": {
+          "name": "Bring up the panel",
+          "description": "Open the panel on the phone now, instead of only showing a dot under the clock."
+        },
+        "ttl": {
+          "name": "Time to live",
+          "description": "Remove the card after this many seconds."
+        },
+        "priority": {
+          "name": "Priority",
+          "description": "Higher sorts first."
+        },
+        "notification_title": {
+          "name": "Notification title",
+          "description": "For the notification shown when the panel cannot be brought up. Defaults to the card title."
+        },
+        "notification_body": {
+          "name": "Notification text",
+          "description": "Defaults to the card subtitle."
+        }
+      }
+    },
+    "clear_card": {
+      "name": "Clear card",
+      "description": "Take a card off the panel.",
+      "fields": {
+        "device_id": {
+          "name": "Phones",
+          "description": "Leave empty for every phone."
+        },
+        "card_id": {
+          "name": "Card id",
+          "description": "The id the card was shown with."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+show_card:
+  fields:
+    device_id:
+      selector:
+        device:
+          integration: miniem
+          multiple: true
+    card:
+      required: true
+      example: |
+        id: blinds_auto_open
+        title: Blinds opened
+        body:
+          - type: text
+            text: The bedroom blinds just opened.
+          - type: row
+            children:
+              - type: button
+                label: Undo
+                style: danger
+                action: undo
+              - type: button
+                label: Fine
+                action: {type: dismiss}
+      selector:
+        object:
+    focus:
+      default: false
+      selector:
+        boolean:
+    ttl:
+      selector:
+        number:
+          min: 1
+          max: 604800
+          unit_of_measurement: s
+          mode: box
+    priority:
+      selector:
+        number:
+          min: -10
+          max: 10
+          mode: box
+    notification_title:
+      selector:
+        text:
+    notification_body:
+      selector:
+        text:
+
+clear_card:
+  fields:
+    device_id:
+      selector:
+        device:
+          integration: miniem
+          multiple: true
+    card_id:
+      required: true
+      selector:
+        text:

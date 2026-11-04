@@ -1,0 +1,13 @@
+{
+  "domain": "miniem",
+  "name": "Miniem",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["http"],
+  "documentation": "https://github.com/klmz/miniem-android/blob/main/docs/home-assistant.md",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}
